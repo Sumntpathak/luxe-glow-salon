@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Luxe Glow Salon</title>
+    <script>
+      // SPA redirect: send all paths back to index with route info
+      var repo = '/luxe-glow-salon';
+      var l = window.location;
+      var path = l.pathname.slice(repo.length);
+      l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + repo + '/?p=' + encodeURIComponent(path + l.search + l.hash));
+    </script>
+  </head>
+  <body></body>
+</html>
