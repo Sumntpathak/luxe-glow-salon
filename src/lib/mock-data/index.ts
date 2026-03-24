@@ -1,0 +1,241 @@
+import {
+  Staff, Client, Admin, Service, Booking, Product,
+  Campaign, Coupon, SalonSettings, PointsHistory, Reward, Earning,
+  WorkingHours,
+} from '@/types';
+
+const defaultWorkingHours: WorkingHours = {
+  monday: { isOpen: true, open: '09:00', close: '18:00' },
+  tuesday: { isOpen: true, open: '09:00', close: '18:00' },
+  wednesday: { isOpen: true, open: '09:00', close: '18:00' },
+  thursday: { isOpen: true, open: '09:00', close: '18:00' },
+  friday: { isOpen: true, open: '09:00', close: '20:00' },
+  saturday: { isOpen: true, open: '10:00', close: '17:00' },
+  sunday: { isOpen: false, open: '10:00', close: '15:00' },
+};
+
+export const adminUser: Admin = {
+  id: 'admin-1',
+  name: 'Sarah Mitchell',
+  email: 'admin@salon.com',
+  phone: '+1-555-0100',
+  role: 'admin',
+  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+  createdAt: '2024-01-01',
+};
+
+export const staffMembers: Staff[] = [
+  {
+    id: 'staff-1',
+    name: 'Emma Johnson',
+    email: 'emma@salon.com',
+    phone: '+1-555-0201',
+    role: 'staff',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma',
+    bio: 'Senior stylist with 8 years of experience in cutting-edge hair design and coloring techniques.',
+    specialties: ['Hair'],
+    commissionPercent: 40,
+    rating: 4.9,
+    isActive: true,
+    workingHours: defaultWorkingHours,
+    blockedDates: ['2026-04-10', '2026-04-11'],
+    createdAt: '2024-02-01',
+  },
+  {
+    id: 'staff-2',
+    name: 'Mia Chen',
+    email: 'mia@salon.com',
+    phone: '+1-555-0202',
+    role: 'staff',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mia',
+    bio: 'Nail art specialist passionate about creative designs and premium manicures.',
+    specialties: ['Nails'],
+    commissionPercent: 35,
+    rating: 4.8,
+    isActive: true,
+    workingHours: defaultWorkingHours,
+    blockedDates: [],
+    createdAt: '2024-03-01',
+  },
+  {
+    id: 'staff-3',
+    name: 'Olivia Brown',
+    email: 'olivia@salon.com',
+    phone: '+1-555-0203',
+    role: 'staff',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Olivia',
+    bio: 'Licensed esthetician specializing in facials, peels, and advanced skincare treatments.',
+    specialties: ['Skin'],
+    commissionPercent: 38,
+    rating: 4.7,
+    isActive: true,
+    workingHours: defaultWorkingHours,
+    blockedDates: ['2026-04-15'],
+    createdAt: '2024-03-15',
+  },
+  {
+    id: 'staff-4',
+    name: 'Sophia Davis',
+    email: 'sophia@salon.com',
+    phone: '+1-555-0204',
+    role: 'staff',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia',
+    bio: 'Multi-talented stylist skilled in hair, nails, and basic skincare services.',
+    specialties: ['Hair', 'Nails'],
+    commissionPercent: 36,
+    rating: 4.6,
+    isActive: true,
+    workingHours: { ...defaultWorkingHours, saturday: { isOpen: false, open: '10:00', close: '17:00' } },
+    blockedDates: [],
+    createdAt: '2024-04-01',
+  },
+];
+
+export const clients: Client[] = [
+  { id: 'client-1', name: 'Alice Walker', email: 'alice@email.com', phone: '+1-555-0301', role: 'consumer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alice', preferences: 'Prefers quiet environment', allergies: 'Latex allergy', loyaltyPoints: 1250, loyaltyTier: 'Gold', referralCode: 'ALICE2024', createdAt: '2024-01-15' },
+  { id: 'client-2', name: 'Bob Martin', email: 'bob@email.com', phone: '+1-555-0302', role: 'consumer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob', preferences: 'Likes detailed consultations', allergies: '', loyaltyPoints: 750, loyaltyTier: 'Silver', referralCode: 'BOB2024', createdAt: '2024-02-10' },
+  { id: 'client-3', name: 'Carol White', email: 'carol@email.com', phone: '+1-555-0303', role: 'consumer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Carol', preferences: 'Loves bold colors', allergies: 'Sensitive to strong fragrances', loyaltyPoints: 420, loyaltyTier: 'Bronze', referralCode: 'CAROL2024', createdAt: '2024-02-20' },
+  { id: 'client-4', name: 'David Lee', email: 'david@email.com', phone: '+1-555-0304', role: 'consumer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David', preferences: 'Quick appointments preferred', allergies: '', loyaltyPoints: 980, loyaltyTier: 'Silver', referralCode: 'DAVID2024', createdAt: '2024-03-05' },
+  { id: 'client-5', name: 'Eva Martinez', email: 'eva@email.com', phone: '+1-555-0305', role: 'consumer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Eva', preferences: 'Organic products only', allergies: 'Parabens', loyaltyPoints: 1520, loyaltyTier: 'Gold', referralCode: 'EVA2024', createdAt: '2024-03-10' },
+  { id: 'client-6', name: 'Frank Wilson', email: 'frank@email.com', phone: '+1-555-0306', role: 'consumer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Frank', preferences: '', allergies: '', loyaltyPoints: 200, loyaltyTier: 'Bronze', referralCode: 'FRANK2024', createdAt: '2024-04-01' },
+  { id: 'client-7', name: 'Grace Kim', email: 'grace@email.com', phone: '+1-555-0307', role: 'consumer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Grace', preferences: 'Evening appointments', allergies: '', loyaltyPoints: 880, loyaltyTier: 'Silver', referralCode: 'GRACE2024', createdAt: '2024-04-15' },
+  { id: 'client-8', name: 'Henry Taylor', email: 'henry@email.com', phone: '+1-555-0308', role: 'consumer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Henry', preferences: 'Beard grooming expert needed', allergies: 'None', loyaltyPoints: 340, loyaltyTier: 'Bronze', referralCode: 'HENRY2024', createdAt: '2024-05-01' },
+  { id: 'client-9', name: 'Iris Patel', email: 'iris@email.com', phone: '+1-555-0309', role: 'consumer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Iris', preferences: 'Prefers Mia for nails', allergies: 'Acetone sensitivity', loyaltyPoints: 1100, loyaltyTier: 'Gold', referralCode: 'IRIS2024', createdAt: '2024-05-10' },
+  { id: 'client-10', name: 'Jack Robinson', email: 'consumer@salon.com', phone: '+1-555-0310', role: 'consumer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jack', preferences: 'Weekend slots only', allergies: '', loyaltyPoints: 600, loyaltyTier: 'Silver', referralCode: 'JACK2024', createdAt: '2024-05-20' },
+];
+
+export const services: Service[] = [
+  { id: 'svc-1', name: 'Classic Haircut', category: 'Hair', duration: 45, price: 55, description: 'Precision cut with consultation, shampoo, and blow-dry.', photoUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=300&h=200&fit=crop', assignableStaff: ['staff-1', 'staff-4'], isActive: true },
+  { id: 'svc-2', name: 'Hair Coloring', category: 'Hair', duration: 120, price: 150, description: 'Full color service with premium products and toner.', photoUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=300&h=200&fit=crop', assignableStaff: ['staff-1', 'staff-4'], isActive: true },
+  { id: 'svc-3', name: 'Blowout & Style', category: 'Hair', duration: 30, price: 40, description: 'Professional blowout with styling for any occasion.', photoUrl: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=300&h=200&fit=crop', assignableStaff: ['staff-1', 'staff-4'], isActive: true },
+  { id: 'svc-4', name: 'Gel Manicure', category: 'Nails', duration: 60, price: 45, description: 'Long-lasting gel manicure with nail art options.', photoUrl: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=300&h=200&fit=crop', assignableStaff: ['staff-2', 'staff-4'], isActive: true },
+  { id: 'svc-5', name: 'Spa Pedicure', category: 'Nails', duration: 75, price: 60, description: 'Relaxing spa pedicure with exfoliation and massage.', photoUrl: 'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=300&h=200&fit=crop', assignableStaff: ['staff-2', 'staff-4'], isActive: true },
+  { id: 'svc-6', name: 'Classic Facial', category: 'Skin', duration: 60, price: 85, description: 'Deep cleansing facial with extraction and hydrating mask.', photoUrl: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=300&h=200&fit=crop', assignableStaff: ['staff-3'], isActive: true },
+  { id: 'svc-7', name: 'Chemical Peel', category: 'Skin', duration: 45, price: 120, description: 'Professional chemical peel for skin renewal and glow.', photoUrl: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=300&h=200&fit=crop', assignableStaff: ['staff-3'], isActive: true },
+  { id: 'svc-8', name: 'Nail Art Design', category: 'Nails', duration: 90, price: 70, description: 'Custom nail art with premium designs and embellishments.', photoUrl: 'https://images.unsplash.com/photo-1607779097040-26e80aa78e66?w=300&h=200&fit=crop', assignableStaff: ['staff-2'], isActive: true },
+];
+
+// Generate bookings with a mix of past, upcoming, and cancelled
+function generateBookings(): Booking[] {
+  const bookings: Booking[] = [];
+  const bookingData = [
+    { id: 'bk-1', clientId: 'client-1', staffId: 'staff-1', serviceId: 'svc-1', date: '2026-03-10', time: '09:00', status: 'completed' as const },
+    { id: 'bk-2', clientId: 'client-2', staffId: 'staff-2', serviceId: 'svc-4', date: '2026-03-10', time: '10:00', status: 'completed' as const },
+    { id: 'bk-3', clientId: 'client-3', staffId: 'staff-3', serviceId: 'svc-6', date: '2026-03-11', time: '11:00', status: 'completed' as const },
+    { id: 'bk-4', clientId: 'client-4', staffId: 'staff-1', serviceId: 'svc-2', date: '2026-03-12', time: '13:00', status: 'completed' as const },
+    { id: 'bk-5', clientId: 'client-5', staffId: 'staff-2', serviceId: 'svc-5', date: '2026-03-13', time: '09:30', status: 'completed' as const },
+    { id: 'bk-6', clientId: 'client-6', staffId: 'staff-4', serviceId: 'svc-3', date: '2026-03-14', time: '14:00', status: 'cancelled' as const },
+    { id: 'bk-7', clientId: 'client-7', staffId: 'staff-3', serviceId: 'svc-7', date: '2026-03-15', time: '10:00', status: 'completed' as const },
+    { id: 'bk-8', clientId: 'client-8', staffId: 'staff-1', serviceId: 'svc-1', date: '2026-03-17', time: '11:00', status: 'completed' as const },
+    { id: 'bk-9', clientId: 'client-9', staffId: 'staff-2', serviceId: 'svc-8', date: '2026-03-18', time: '15:00', status: 'completed' as const },
+    { id: 'bk-10', clientId: 'client-10', staffId: 'staff-4', serviceId: 'svc-4', date: '2026-03-19', time: '09:00', status: 'completed' as const },
+    { id: 'bk-11', clientId: 'client-1', staffId: 'staff-1', serviceId: 'svc-2', date: '2026-03-20', time: '10:00', status: 'completed' as const },
+    { id: 'bk-12', clientId: 'client-3', staffId: 'staff-3', serviceId: 'svc-6', date: '2026-03-21', time: '13:00', status: 'cancelled' as const },
+    // Upcoming bookings
+    { id: 'bk-13', clientId: 'client-10', staffId: 'staff-1', serviceId: 'svc-1', date: '2026-03-24', time: '09:00', status: 'confirmed' as const },
+    { id: 'bk-14', clientId: 'client-2', staffId: 'staff-2', serviceId: 'svc-4', date: '2026-03-24', time: '10:00', status: 'confirmed' as const },
+    { id: 'bk-15', clientId: 'client-5', staffId: 'staff-3', serviceId: 'svc-7', date: '2026-03-24', time: '11:00', status: 'pending' as const },
+    { id: 'bk-16', clientId: 'client-4', staffId: 'staff-4', serviceId: 'svc-3', date: '2026-03-24', time: '14:00', status: 'confirmed' as const },
+    { id: 'bk-17', clientId: 'client-1', staffId: 'staff-1', serviceId: 'svc-2', date: '2026-03-25', time: '10:00', status: 'confirmed' as const },
+    { id: 'bk-18', clientId: 'client-7', staffId: 'staff-2', serviceId: 'svc-5', date: '2026-03-25', time: '13:00', status: 'pending' as const },
+    { id: 'bk-19', clientId: 'client-9', staffId: 'staff-3', serviceId: 'svc-6', date: '2026-03-26', time: '09:00', status: 'confirmed' as const },
+    { id: 'bk-20', clientId: 'client-6', staffId: 'staff-1', serviceId: 'svc-1', date: '2026-03-26', time: '15:00', status: 'confirmed' as const },
+    { id: 'bk-21', clientId: 'client-8', staffId: 'staff-4', serviceId: 'svc-4', date: '2026-03-27', time: '10:00', status: 'pending' as const },
+    { id: 'bk-22', clientId: 'client-3', staffId: 'staff-2', serviceId: 'svc-8', date: '2026-03-28', time: '11:00', status: 'confirmed' as const },
+    { id: 'bk-23', clientId: 'client-10', staffId: 'staff-1', serviceId: 'svc-3', date: '2026-03-29', time: '10:00', status: 'confirmed' as const },
+  ];
+
+  for (const b of bookingData) {
+    const svc = services.find(s => s.id === b.serviceId)!;
+    const [h, m] = b.time.split(':').map(Number);
+    const endMinutes = h * 60 + m + svc.duration;
+    const endTime = `${String(Math.floor(endMinutes / 60)).padStart(2, '0')}:${String(endMinutes % 60).padStart(2, '0')}`;
+    bookings.push({
+      ...b,
+      endTime,
+      notes: '',
+      createdAt: '2026-03-01',
+    });
+  }
+
+  return bookings;
+}
+
+export const bookings: Booking[] = generateBookings();
+
+export const products: Product[] = [
+  { id: 'prod-1', name: 'Shampoo - Hydrating', category: 'Hair Care', stockLevel: 24, reorderThreshold: 10, price: 18 },
+  { id: 'prod-2', name: 'Conditioner - Repair', category: 'Hair Care', stockLevel: 18, reorderThreshold: 10, price: 20 },
+  { id: 'prod-3', name: 'Hair Color - Blonde', category: 'Hair Color', stockLevel: 8, reorderThreshold: 10, price: 25 },
+  { id: 'prod-4', name: 'Hair Color - Brown', category: 'Hair Color', stockLevel: 12, reorderThreshold: 10, price: 25 },
+  { id: 'prod-5', name: 'Gel Polish - Red', category: 'Nail Products', stockLevel: 15, reorderThreshold: 5, price: 12 },
+  { id: 'prod-6', name: 'Gel Polish - Pink', category: 'Nail Products', stockLevel: 3, reorderThreshold: 5, price: 12 },
+  { id: 'prod-7', name: 'Cuticle Oil', category: 'Nail Products', stockLevel: 20, reorderThreshold: 8, price: 8 },
+  { id: 'prod-8', name: 'Facial Cleanser', category: 'Skincare', stockLevel: 14, reorderThreshold: 8, price: 22 },
+  { id: 'prod-9', name: 'Moisturizer SPF 30', category: 'Skincare', stockLevel: 2, reorderThreshold: 5, price: 35 },
+  { id: 'prod-10', name: 'Chemical Peel Solution', category: 'Skincare', stockLevel: 6, reorderThreshold: 4, price: 45 },
+  { id: 'prod-11', name: 'Styling Mousse', category: 'Hair Care', stockLevel: 1, reorderThreshold: 5, price: 16 },
+  { id: 'prod-12', name: 'Heat Protectant Spray', category: 'Hair Care', stockLevel: 22, reorderThreshold: 8, price: 14 },
+];
+
+export const campaigns: Campaign[] = [
+  { id: 'camp-1', name: 'Spring Special', type: 'Email', targetSegment: 'all', messageBody: 'Enjoy 20% off all services this spring! Book now and glow up.', status: 'sent', openRate: 34.5, createdAt: '2026-03-01' },
+  { id: 'camp-2', name: 'Welcome Back', type: 'SMS', targetSegment: 'lapsed', messageBody: 'We miss you! Come back and get a free blowout with any service.', status: 'sent', openRate: 28.2, createdAt: '2026-03-10' },
+  { id: 'camp-3', name: 'Gold Member Exclusive', type: 'Email', targetSegment: 'gold', messageBody: 'As a Gold member, enjoy priority booking and 15% off this month.', status: 'draft', openRate: 0, createdAt: '2026-03-20' },
+];
+
+export const coupons: Coupon[] = [
+  { id: 'coup-1', code: 'SPRING20', discountPercent: 20, expiryDate: '2026-04-30', isActive: true },
+  { id: 'coup-2', code: 'WELCOME10', discountPercent: 10, expiryDate: '2026-05-31', isActive: true },
+  { id: 'coup-3', code: 'VIP15', discountPercent: 15, expiryDate: '2026-04-15', isActive: false },
+];
+
+export const salonSettings: SalonSettings = {
+  name: 'Luxe Glow Salon',
+  address: '123 Beauty Lane, Suite 100, New York, NY 10001',
+  phone: '+1-555-0100',
+  logoUrl: '',
+  workingHours: defaultWorkingHours,
+  bookingRules: {
+    minAdvanceHours: 2,
+    maxFutureDays: 30,
+    cancellationWindowHours: 24,
+  },
+  loyaltySettings: {
+    pointsPerCurrencyUnit: 1,
+    bronzeThreshold: 0,
+    silverThreshold: 500,
+    goldThreshold: 1000,
+  },
+};
+
+export const pointsHistory: PointsHistory[] = [
+  { id: 'ph-1', clientId: 'client-1', points: 55, reason: 'Classic Haircut booking', date: '2026-03-10' },
+  { id: 'ph-2', clientId: 'client-1', points: 150, reason: 'Hair Coloring booking', date: '2026-03-20' },
+  { id: 'ph-3', clientId: 'client-2', points: 45, reason: 'Gel Manicure booking', date: '2026-03-10' },
+  { id: 'ph-4', clientId: 'client-5', points: 60, reason: 'Spa Pedicure booking', date: '2026-03-13' },
+  { id: 'ph-5', clientId: 'client-10', points: 45, reason: 'Gel Manicure booking', date: '2026-03-19' },
+  { id: 'ph-6', clientId: 'client-9', points: 70, reason: 'Nail Art Design booking', date: '2026-03-18' },
+  { id: 'ph-7', clientId: 'client-7', points: 120, reason: 'Chemical Peel booking', date: '2026-03-15' },
+  { id: 'ph-8', clientId: 'client-10', points: 100, reason: 'Referral bonus', date: '2026-03-15' },
+];
+
+export const rewards: Reward[] = [
+  { id: 'rw-1', name: '10% Off Next Visit', description: 'Get 10% discount on your next booking', pointsCost: 200, discountPercent: 10 },
+  { id: 'rw-2', name: '20% Off Any Service', description: 'Save 20% on any single service', pointsCost: 400, discountPercent: 20 },
+  { id: 'rw-3', name: 'Free Blowout', description: 'Complimentary blowout & style service', pointsCost: 300, discountPercent: 100 },
+  { id: 'rw-4', name: 'VIP Treatment Upgrade', description: 'Upgrade any service to the premium version', pointsCost: 500, discountPercent: 25 },
+];
+
+export const earnings: Earning[] = [
+  { id: 'earn-1', staffId: 'staff-1', bookingId: 'bk-1', serviceAmount: 55, commissionAmount: 22, tips: 10, date: '2026-03-10' },
+  { id: 'earn-2', staffId: 'staff-2', bookingId: 'bk-2', serviceAmount: 45, commissionAmount: 15.75, tips: 8, date: '2026-03-10' },
+  { id: 'earn-3', staffId: 'staff-3', bookingId: 'bk-3', serviceAmount: 85, commissionAmount: 32.30, tips: 15, date: '2026-03-11' },
+  { id: 'earn-4', staffId: 'staff-1', bookingId: 'bk-4', serviceAmount: 150, commissionAmount: 60, tips: 20, date: '2026-03-12' },
+  { id: 'earn-5', staffId: 'staff-2', bookingId: 'bk-5', serviceAmount: 60, commissionAmount: 21, tips: 10, date: '2026-03-13' },
+  { id: 'earn-6', staffId: 'staff-3', bookingId: 'bk-7', serviceAmount: 120, commissionAmount: 45.60, tips: 18, date: '2026-03-15' },
+  { id: 'earn-7', staffId: 'staff-1', bookingId: 'bk-8', serviceAmount: 55, commissionAmount: 22, tips: 8, date: '2026-03-17' },
+  { id: 'earn-8', staffId: 'staff-2', bookingId: 'bk-9', serviceAmount: 70, commissionAmount: 24.50, tips: 12, date: '2026-03-18' },
+  { id: 'earn-9', staffId: 'staff-4', bookingId: 'bk-10', serviceAmount: 45, commissionAmount: 16.20, tips: 7, date: '2026-03-19' },
+  { id: 'earn-10', staffId: 'staff-1', bookingId: 'bk-11', serviceAmount: 150, commissionAmount: 60, tips: 25, date: '2026-03-20' },
+];

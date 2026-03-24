@@ -1,0 +1,149 @@
+@import "tw-animate-css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Glossy Rose & Pearl */
+    --background: #fdf5f7;
+    --foreground: #1e1226;
+    --card: #ffffff;
+    --card-foreground: #1e1226;
+    --popover: #ffffff;
+    --popover-foreground: #1e1226;
+    --primary: #d6336c;
+    --primary-foreground: #ffffff;
+    --secondary: #fce4ec;
+    --secondary-foreground: #880e4f;
+    --muted: #f8eef1;
+    --muted-foreground: #8e7080;
+    --accent: #f48fb1;
+    --accent-foreground: #4a0e2e;
+    --destructive: #d32f2f;
+    --border: #f3d5de;
+    --input: #f0d0da;
+    --ring: #e91e8c;
+    --chart-1: #d6336c;
+    --chart-2: #f48fb1;
+    --chart-3: #7b1fa2;
+    --chart-4: #26a69a;
+    --chart-5: #ff7043;
+    --radius: 0.875rem;
+    --sidebar: #ffffff;
+    --sidebar-foreground: #1e1226;
+    --sidebar-primary: #d6336c;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #fce4ec;
+    --sidebar-accent-foreground: #880e4f;
+    --sidebar-border: #f3d5de;
+    --sidebar-ring: #e91e8c;
+  }
+  .dark {
+    /* Velvet Night */
+    --background: #120a10;
+    --foreground: #f5e6ee;
+    --card: #1e1220;
+    --card-foreground: #f5e6ee;
+    --popover: #1e1220;
+    --popover-foreground: #f5e6ee;
+    --primary: #f48fb1;
+    --primary-foreground: #1e0510;
+    --secondary: #2d1828;
+    --secondary-foreground: #f8bbd0;
+    --muted: #2a1826;
+    --muted-foreground: #b89aac;
+    --accent: #d6336c;
+    --accent-foreground: #ffffff;
+    --destructive: #ef5350;
+    --border: #3d2335;
+    --input: #3d2335;
+    --ring: #f48fb1;
+    --chart-1: #f48fb1;
+    --chart-2: #d6336c;
+    --chart-3: #ce93d8;
+    --chart-4: #80cbc4;
+    --chart-5: #ffab91;
+    --sidebar: #1e1220;
+    --sidebar-foreground: #f5e6ee;
+    --sidebar-primary: #f48fb1;
+    --sidebar-primary-foreground: #1e0510;
+    --sidebar-accent: #2d1828;
+    --sidebar-accent-foreground: #f8bbd0;
+    --sidebar-border: #3d2335;
+    --sidebar-ring: #f48fb1;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 999px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 999px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .glass {
+    backdrop-filter: blur(16px) saturate(200%);
+    -webkit-backdrop-filter: blur(16px) saturate(200%);
+  }
+  .glossy {
+    background-image: linear-gradient(
+      135deg,
+      rgba(255,255,255,0.25) 0%,
+      rgba(255,255,255,0.05) 50%,
+      rgba(255,255,255,0) 100%
+    );
+  }
+  .glow-pink {
+    box-shadow: 0 0 20px rgba(214,51,108,0.15), 0 0 60px rgba(214,51,108,0.05);
+  }
+  .glow-pink-lg {
+    box-shadow: 0 4px 30px rgba(214,51,108,0.2), 0 0 80px rgba(214,51,108,0.08);
+  }
+}
+
+@layer components {
+  .section-fade {
+    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
