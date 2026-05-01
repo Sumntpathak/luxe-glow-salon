@@ -37,8 +37,17 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format, parseISO } from 'date-fns';
+import { FeatureGate } from '@/components/shared/feature-gate';
 
-export default function AdminMarketingPage() {
+export default function AdminMarketingPageWrapper() {
+  return (
+    <FeatureGate plan="standard">
+      <AdminMarketingPage />
+    </FeatureGate>
+  );
+}
+
+function AdminMarketingPage() {
   const {
     campaigns,
     addCampaign,

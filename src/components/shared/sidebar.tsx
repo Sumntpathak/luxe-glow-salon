@@ -4,7 +4,7 @@ import { useStore } from '@/lib/store';
 import {
   Calendar, Users, Scissors, BarChart3, Package, Megaphone,
   Settings, LayoutDashboard, Clock, DollarSign, Star,
-  User, BookOpen, Gift, Menu, X, Sun, Moon, LogOut,
+  User, BookOpen, Gift, Menu, X, Sun, Moon, LogOut, CreditCard, MapPin,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -33,6 +33,8 @@ const adminLinks = [
   { href: '/admin/inventory', label: 'Inventory', icon: Package },
   { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/admin/marketing', label: 'Marketing', icon: Megaphone },
+  { href: '/admin/locations', label: 'Locations', icon: MapPin },
+  { href: '/admin/billing', label: 'Billing', icon: CreditCard },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
 ];
 

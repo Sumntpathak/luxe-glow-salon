@@ -151,12 +151,12 @@ export default function AdminStaffPage() {
       return;
     }
 
-    const newStaff: Staff = {
+    const newStaff = {
       id: `staff-${Date.now()}`,
       name: formData.name.trim(),
       email: formData.email.trim(),
       phone: formData.phone.trim(),
-      role: 'staff',
+      role: 'staff' as const,
       avatar: '',
       createdAt: new Date().toISOString(),
       bio: formData.bio.trim(),

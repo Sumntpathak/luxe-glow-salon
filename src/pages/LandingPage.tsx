@@ -75,6 +75,12 @@ export default function LandingPage() {
               {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
             <button
+              onClick={() => navigate('/for-business')}
+              className="hidden sm:inline-flex h-9 px-4 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors items-center"
+            >
+              For Business
+            </button>
+            <button
               onClick={() => navigate('/login')}
               className="hidden sm:inline-flex h-9 px-4 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors items-center"
             >

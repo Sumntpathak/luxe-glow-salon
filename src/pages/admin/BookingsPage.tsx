@@ -155,7 +155,7 @@ export default function AdminBookingsPage() {
     const endDateTime = addMinutes(startDateTime, service.duration);
     const endTime = format(endDateTime, 'HH:mm');
 
-    const newBooking: Booking = {
+    const newBooking = {
       id: `booking-${Date.now()}`,
       clientId: formClientId,
       staffId: formStaffId,
@@ -163,7 +163,7 @@ export default function AdminBookingsPage() {
       date: formDate,
       time: formTime,
       endTime,
-      status: 'confirmed',
+      status: 'confirmed' as const,
       notes: formNotes,
       createdAt: new Date().toISOString(),
     };

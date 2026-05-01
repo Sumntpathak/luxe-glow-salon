@@ -7,10 +7,12 @@ import { useEffect } from 'react';
 import LandingPage from '@/pages/LandingPage';
 import PublicBookPage from '@/pages/PublicBookPage';
 import MyBookingsPage from '@/pages/MyBookingsPage';
+import ForBusinessPage from '@/pages/ForBusinessPage';
 
 // Auth pages
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
+import VendorSignupPage from '@/pages/auth/VendorSignupPage';
 
 // Consumer pages
 import BookPage from '@/pages/consumer/BookPage';
@@ -34,14 +36,30 @@ import InventoryPage from '@/pages/admin/InventoryPage';
 import AnalyticsPage from '@/pages/admin/AnalyticsPage';
 import MarketingPage from '@/pages/admin/MarketingPage';
 import SettingsPage from '@/pages/admin/SettingsPage';
+import BillingPage from '@/pages/admin/BillingPage';
+import LocationsPage from '@/pages/admin/LocationsPage';
 
 // Layouts
 import { PortalLayout } from '@/components/shared/portal-layout';
 
-function ProtectedRoute({ role, children }: { role: 'admin' | 'staff' | 'consumer'; children: React.ReactNode }) {
-  const { currentUser } = useStore();
+function ProtectedRoute({ role, children, allowExpiredTrial = false }: {
+  role: 'admin' | 'staff' | 'consumer';
+  children: React.ReactNode;
+  allowExpiredTrial?: boolean;
+}) {
+  const { currentUser, organizations, currentOrgId } = useStore();
   if (!currentUser) return <Navigate to="/login" replace />;
   if (currentUser.role !== role) return <Navigate to="/" replace />;
+
+  // Trial paywall: admins with expired trial are forced to billing page
+  if (role === 'admin' && !allowExpiredTrial) {
+    const org = organizations.find(o => o.id === currentOrgId);
+    const trialExpired =
+      org?.subscriptionStatus === 'trialing' &&
+      new Date(org.trialEndsAt).getTime() < Date.now();
+    if (trialExpired) return <Navigate to="/admin/billing" replace />;
+  }
+
   return <PortalLayout role={role}>{children}</PortalLayout>;
 }
 
@@ -73,6 +91,10 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
+        {/* Vendor / SaaS marketing & onboarding */}
+        <Route path="/for-business" element={<ForBusinessPage />} />
+        <Route path="/vendor-signup" element={<VendorSignupPage />} />
+
         {/* Consumer portal (logged in) */}
         <Route path="/consumer/book" element={<ProtectedRoute role="consumer"><BookPage /></ProtectedRoute>} />
         <Route path="/consumer/appointments" element={<ProtectedRoute role="consumer"><AppointmentsPage /></ProtectedRoute>} />
@@ -95,6 +117,8 @@ export default function App() {
         <Route path="/admin/analytics" element={<ProtectedRoute role="admin"><AnalyticsPage /></ProtectedRoute>} />
         <Route path="/admin/marketing" element={<ProtectedRoute role="admin"><MarketingPage /></ProtectedRoute>} />
         <Route path="/admin/settings" element={<ProtectedRoute role="admin"><SettingsPage /></ProtectedRoute>} />
+        <Route path="/admin/billing" element={<ProtectedRoute role="admin" allowExpiredTrial><BillingPage /></ProtectedRoute>} />
+        <Route path="/admin/locations" element={<ProtectedRoute role="admin"><LocationsPage /></ProtectedRoute>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -13,7 +13,11 @@ import {
 import { useMemo } from 'react';
 
 export default function AdminDashboardPage() {
-  const { bookings, services, clients, staff } = useStore();
+  const { bookings, services, clients, staff, locations, currentOrgId } = useStore();
+  const orgLocations = useMemo(
+    () => locations.filter((l) => l.orgId === currentOrgId && l.isActive),
+    [locations, currentOrgId],
+  );
 
   const today = startOfDay(new Date());
   const thirtyDaysAgo = subDays(today, 30);
@@ -67,6 +71,26 @@ export default function AdminDashboardPage() {
     const cancelled = last30DaysBookings.filter((b) => b.status === 'cancelled').length;
     return Math.round((cancelled / last30DaysBookings.length) * 100);
   }, [last30DaysBookings]);
+
+  // --- Cross-location revenue rollup (last 30 days) ---
+
+  const revenueByLocation = useMemo(() => {
+    return orgLocations.map((loc) => {
+      const locBookings = last30DaysBookings.filter(
+        (b) => b.locationId === loc.id && b.status === 'completed',
+      );
+      const revenue = locBookings.reduce(
+        (sum, b) => sum + (serviceMap[b.serviceId]?.price ?? 0),
+        0,
+      );
+      return { id: loc.id, name: loc.name, revenue, bookingCount: locBookings.length };
+    });
+  }, [orgLocations, last30DaysBookings, serviceMap]);
+
+  const totalOrgRevenue = useMemo(
+    () => revenueByLocation.reduce((sum, l) => sum + l.revenue, 0),
+    [revenueByLocation],
+  );
 
   // --- Revenue trend (last 30 days) ---
 
@@ -152,6 +176,43 @@ export default function AdminDashboardPage() {
           description="Cancellations in last 30 days"
         />
       </div>
+
+      {/* Cross-location rollup — only shown when chain has multiple locations */}
+      {orgLocations.length > 1 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>Revenue by location · last 30 days</span>
+              <span className="text-sm font-normal text-muted-foreground">
+                Total ${totalOrgRevenue.toFixed(0)}
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {revenueByLocation.map((row) => {
+                const pct = totalOrgRevenue > 0 ? (row.revenue / totalOrgRevenue) * 100 : 0;
+                return (
+                  <div key={row.id} className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium">{row.name}</span>
+                      <span className="text-muted-foreground">
+                        ${row.revenue.toFixed(0)} · {row.bookingCount} bookings
+                      </span>
+                    </div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-primary to-accent transition-all"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

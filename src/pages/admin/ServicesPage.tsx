@@ -113,11 +113,10 @@ export default function AdminServicesPage() {
       updateService(editingId, { ...form });
       toast.success('Service updated successfully');
     } else {
-      const newService: Service = {
+      addService({
         id: `svc-${Date.now()}`,
         ...form,
-      };
-      addService(newService);
+      });
       toast.success('Service added successfully');
     }
     setDialogOpen(false);
