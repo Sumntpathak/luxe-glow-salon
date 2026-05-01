@@ -36,9 +36,20 @@ export const STATUS_STYLES: Record<BookingStatus, StatusStyle> = {
     badge: 'bg-blue-500/15 text-blue-700 dark:text-blue-300',
     label: 'Confirmed',
   },
-  // Note: existing BookingStatus only has 4 values today (confirmed/pending/completed/cancelled).
-  // The extended workflow (checked_in/in_service/no_show) lives in the data-model migration.
-  // We map them to confirmed/completed colors as a forward-compat aliasing layer.
+  checked_in: {
+    bg: 'bg-purple-100/80 dark:bg-purple-900/40',
+    border: 'border-l-purple-500',
+    text: 'text-purple-950 dark:text-purple-100',
+    badge: 'bg-purple-500/15 text-purple-700 dark:text-purple-300',
+    label: 'Checked in',
+  },
+  in_service: {
+    bg: 'bg-emerald-100/80 dark:bg-emerald-900/40',
+    border: 'border-l-emerald-500',
+    text: 'text-emerald-950 dark:text-emerald-100',
+    badge: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
+    label: 'In service',
+  },
   completed: {
     bg: 'bg-gray-100 dark:bg-gray-800/60',
     border: 'border-l-gray-400 dark:border-l-gray-500',
@@ -52,6 +63,13 @@ export const STATUS_STYLES: Record<BookingStatus, StatusStyle> = {
     text: 'text-red-700 dark:text-red-300',
     badge: 'bg-red-500/15 text-red-700 dark:text-red-300',
     label: 'Cancelled',
+  },
+  no_show: {
+    bg: 'bg-rose-50 dark:bg-rose-950/40 opacity-70',
+    border: 'border-l-rose-400',
+    text: 'text-rose-700 dark:text-rose-300',
+    badge: 'bg-rose-500/15 text-rose-700 dark:text-rose-300',
+    label: 'No-show',
   },
 };
 

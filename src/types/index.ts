@@ -91,7 +91,14 @@ export interface Service {
 
 export type ServiceCategory = 'Hair' | 'Nails' | 'Skin';
 
-export type BookingStatus = 'confirmed' | 'pending' | 'completed' | 'cancelled';
+export type BookingStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'checked_in'
+  | 'in_service'
+  | 'completed'
+  | 'cancelled'
+  | 'no_show';
 
 export interface Booking {
   id: string;
@@ -105,6 +112,10 @@ export interface Booking {
   endTime: string;
   status: BookingStatus;
   notes: string;
+  /** Internal-only notes visible to staff but not the client. */
+  privateNotes?: string;
+  /** Express Booking groups multiple sequential services under one shared id. */
+  groupId?: string;
   createdAt: string;
 }
 

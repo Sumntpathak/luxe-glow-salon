@@ -76,6 +76,8 @@ interface AppState {
   // Bookings
   bookings: Booking[];
   addBooking: (b: Omit<Booking, 'orgId' | 'locationId'>) => void;
+  /** Atomically add multiple bookings as one Express-Booking group. Returns the shared groupId. */
+  addBookingGroup: (items: Array<Omit<Booking, 'orgId' | 'locationId' | 'groupId'>>) => string;
   updateBooking: (id: string, data: Partial<Booking>) => void;
   cancelBooking: (id: string) => void;
 
@@ -241,6 +243,21 @@ export const useStore = create<AppState>()(
       addBooking: (b) => set((state) => ({
         bookings: [...state.bookings, { ...b, orgId: state.currentOrgId, locationId: state.currentLocationId }],
       })),
+      addBookingGroup: (items) => {
+        const groupId = `grp-${Date.now()}`;
+        set((state) => ({
+          bookings: [
+            ...state.bookings,
+            ...items.map((i) => ({
+              ...i,
+              orgId: state.currentOrgId,
+              locationId: state.currentLocationId,
+              groupId,
+            })),
+          ],
+        }));
+        return groupId;
+      },
       updateBooking: (id, data) => set((state) => ({
         bookings: state.bookings.map(b => b.id === id ? { ...b, ...data } : b),
       })),

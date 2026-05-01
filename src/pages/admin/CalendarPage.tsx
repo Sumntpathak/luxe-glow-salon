@@ -60,6 +60,21 @@ export default function AdminCalendarPage() {
   const handleSelectAppointment = useCallback((b: Booking) => setSelected(b), []);
   const handleCreateAt = useCallback((input: QuickCreateState) => setQuickCreate(input), []);
 
+  // MGN-204: drag-to-reschedule callback — receives the proposed move from the grid.
+  const handleReschedule = useCallback((input: {
+    bookingId: string; newDate: string; newTime: string; newEndTime: string; newStaffId?: string;
+  }) => {
+    const existing = bookings.find((b) => b.id === input.bookingId);
+    if (!existing) return;
+    updateBooking(input.bookingId, {
+      date: input.newDate,
+      time: input.newTime,
+      endTime: input.newEndTime,
+      staffId: input.newStaffId ?? existing.staffId,
+    });
+    toast.success(`Moved to ${input.newTime}`);
+  }, [bookings, updateBooking]);
+
   // Stabilize the client array passed to grid components so they don't re-render on every parent render.
   const clientLite = useMemo(
     () => clients.map((c) => ({ id: c.id, name: c.name, avatar: c.avatar })),
@@ -137,6 +152,7 @@ export default function AdminCalendarPage() {
                 clients={clientLite}
                 onSelectAppointment={handleSelectAppointment}
                 onCreateAt={handleCreateAt}
+                onReschedule={handleReschedule}
               />
             )}
             {effectiveView === 'day' && (
@@ -148,6 +164,7 @@ export default function AdminCalendarPage() {
                 clients={clientLite}
                 onSelectAppointment={handleSelectAppointment}
                 onCreateAt={handleCreateAt}
+                onReschedule={handleReschedule}
               />
             )}
             {effectiveView === 'schedule' && renderSchedule()}
@@ -193,8 +210,7 @@ export default function AdminCalendarPage() {
     </>
   );
 
-  // Suppress lint for unused; reserved for future drag-rescheduler.
-  void updateBooking;
+  // Suppress lint for unused; reserved for future deeplink navigation.
   void navigate;
 }
 

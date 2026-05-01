@@ -5,9 +5,9 @@ import { useEffect } from 'react';
 
 // Public pages
 import LandingPage from '@/pages/LandingPage';
-import PublicBookPage from '@/pages/PublicBookPage';
 import MyBookingsPage from '@/pages/MyBookingsPage';
 import ForBusinessPage from '@/pages/ForBusinessPage';
+import ExpressBookingPage from '@/pages/ExpressBookingPage';
 
 // Auth pages
 import LoginPage from '@/pages/auth/LoginPage';
@@ -15,7 +15,6 @@ import RegisterPage from '@/pages/auth/RegisterPage';
 import VendorSignupPage from '@/pages/auth/VendorSignupPage';
 
 // Consumer pages
-import BookPage from '@/pages/consumer/BookPage';
 import AppointmentsPage from '@/pages/consumer/AppointmentsPage';
 import ProfilePage from '@/pages/consumer/ProfilePage';
 import RewardsPage from '@/pages/consumer/RewardsPage';
@@ -43,6 +42,7 @@ import CalendarPage from '@/pages/admin/CalendarPage';
 // Layouts
 import { PortalLayout } from '@/components/shared/portal-layout';
 import CommandPalette from '@/components/shared/command-palette';
+import { useAutoProgression } from '@/lib/booking/use-auto-progression';
 
 function ProtectedRoute({ role, children, allowExpiredTrial = false }: {
   role: 'admin' | 'staff' | 'consumer';
@@ -67,6 +67,7 @@ function ProtectedRoute({ role, children, allowExpiredTrial = false }: {
 
 export default function App() {
   const { darkMode } = useStore();
+  useAutoProgression(); // MGN-404: 60s tick auto-advances checked_in → in_service + late toasts
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
@@ -89,7 +90,7 @@ export default function App() {
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
-        <Route path="/book" element={<PublicBookPage />} />
+        <Route path="/book" element={<ExpressBookingPage />} />
         <Route path="/my-bookings" element={<MyBookingsPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -99,7 +100,7 @@ export default function App() {
         <Route path="/vendor-signup" element={<VendorSignupPage />} />
 
         {/* Consumer portal (logged in) */}
-        <Route path="/consumer/book" element={<ProtectedRoute role="consumer"><BookPage /></ProtectedRoute>} />
+        <Route path="/consumer/book" element={<ProtectedRoute role="consumer"><ExpressBookingPage /></ProtectedRoute>} />
         <Route path="/consumer/appointments" element={<ProtectedRoute role="consumer"><AppointmentsPage /></ProtectedRoute>} />
         <Route path="/consumer/profile" element={<ProtectedRoute role="consumer"><ProfilePage /></ProtectedRoute>} />
         <Route path="/consumer/rewards" element={<ProtectedRoute role="consumer"><RewardsPage /></ProtectedRoute>} />

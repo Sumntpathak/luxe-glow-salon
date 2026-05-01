@@ -15,6 +15,11 @@
 
 # production
 /build
+/dist
+
+# ruflo / claude-flow swarm session state (per-machine, not project code)
+/.claude-flow
+/.swarm
 
 # misc
 .DS_Store

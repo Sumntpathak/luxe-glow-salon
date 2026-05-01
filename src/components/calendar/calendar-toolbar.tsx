@@ -34,7 +34,7 @@ const VIEWS: ReadonlyArray<{ value: CalendarView; label: string }> = [
   { value: 'week', label: 'Week' },
   { value: 'schedule', label: 'Schedule' },
 ];
-const STATUSES: ReadonlyArray<BookingStatus> = ['confirmed', 'pending', 'completed', 'cancelled'];
+const STATUSES: ReadonlyArray<BookingStatus> = ['pending', 'confirmed', 'checked_in', 'in_service', 'completed', 'cancelled', 'no_show'];
 const CATEGORIES: ReadonlyArray<ServiceCategory> = ['Hair', 'Nails', 'Skin'];
 
 const shiftDate = (d: Date, view: CalendarView, dir: 1 | -1): Date =>
