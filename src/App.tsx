@@ -21,7 +21,7 @@ import ProfilePage from '@/pages/consumer/ProfilePage';
 import RewardsPage from '@/pages/consumer/RewardsPage';
 
 // Staff pages
-import CalendarPage from '@/pages/staff/CalendarPage';
+import StaffCalendarPage from '@/pages/staff/CalendarPage';
 import StaffClientsPage from '@/pages/staff/ClientsPage';
 import EarningsPage from '@/pages/staff/EarningsPage';
 import SchedulePage from '@/pages/staff/SchedulePage';
@@ -38,9 +38,11 @@ import MarketingPage from '@/pages/admin/MarketingPage';
 import SettingsPage from '@/pages/admin/SettingsPage';
 import BillingPage from '@/pages/admin/BillingPage';
 import LocationsPage from '@/pages/admin/LocationsPage';
+import CalendarPage from '@/pages/admin/CalendarPage';
 
 // Layouts
 import { PortalLayout } from '@/components/shared/portal-layout';
+import CommandPalette from '@/components/shared/command-palette';
 
 function ProtectedRoute({ role, children, allowExpiredTrial = false }: {
   role: 'admin' | 'staff' | 'consumer';
@@ -83,6 +85,7 @@ export default function App() {
           },
         }}
       />
+      <CommandPalette />
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
@@ -102,7 +105,7 @@ export default function App() {
         <Route path="/consumer/rewards" element={<ProtectedRoute role="consumer"><RewardsPage /></ProtectedRoute>} />
 
         {/* Staff portal */}
-        <Route path="/staff/calendar" element={<ProtectedRoute role="staff"><CalendarPage /></ProtectedRoute>} />
+        <Route path="/staff/calendar" element={<ProtectedRoute role="staff"><StaffCalendarPage /></ProtectedRoute>} />
         <Route path="/staff/clients" element={<ProtectedRoute role="staff"><StaffClientsPage /></ProtectedRoute>} />
         <Route path="/staff/earnings" element={<ProtectedRoute role="staff"><EarningsPage /></ProtectedRoute>} />
         <Route path="/staff/schedule" element={<ProtectedRoute role="staff"><SchedulePage /></ProtectedRoute>} />
@@ -119,6 +122,7 @@ export default function App() {
         <Route path="/admin/settings" element={<ProtectedRoute role="admin"><SettingsPage /></ProtectedRoute>} />
         <Route path="/admin/billing" element={<ProtectedRoute role="admin" allowExpiredTrial><BillingPage /></ProtectedRoute>} />
         <Route path="/admin/locations" element={<ProtectedRoute role="admin"><LocationsPage /></ProtectedRoute>} />
+        <Route path="/admin/calendar" element={<ProtectedRoute role="admin"><CalendarPage /></ProtectedRoute>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

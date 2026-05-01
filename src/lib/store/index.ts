@@ -112,6 +112,10 @@ interface AppState {
   // Dark mode
   darkMode: boolean;
   toggleDarkMode: () => void;
+
+  // Command palette recents
+  recentNavIds: string[];
+  pushRecentNav: (id: string) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -297,9 +301,16 @@ export const useStore = create<AppState>()(
       // Dark mode
       darkMode: false,
       toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
+
+      // Command palette recents
+      recentNavIds: [],
+      pushRecentNav: (id) => set((state) => ({
+        recentNavIds: [id, ...state.recentNavIds.filter(x => x !== id)].slice(0, 10),
+      })),
     }),
     {
       name: 'salon-store',
+      version: 2, // bumped: bookings now generated relative to today; older persisted data is auto-discarded by zustand
       partialize: (state) => ({
         currentUser: state.currentUser,
         organizations: state.organizations,
@@ -317,6 +328,7 @@ export const useStore = create<AppState>()(
         pointsHistory: state.pointsHistory,
         earnings: state.earnings,
         darkMode: state.darkMode,
+        recentNavIds: state.recentNavIds,
       }),
     }
   )

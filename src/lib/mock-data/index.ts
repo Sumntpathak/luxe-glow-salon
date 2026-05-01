@@ -137,40 +137,112 @@ const serviceSeeds: ServiceSeed[] = [
 export const services: Service[] = serviceSeeds.map(s => ({ ...s, ...tagOrgLocs }));
 
 // ── Bookings ────────────────────────────────────────────────────────────────
+// Generate bookings RELATIVE to today so the calendar always renders rich data.
+// Spread: last 7 days (mostly completed) · today (mix) · next 14 days (confirmed/pending).
 function generateBookings(): Booking[] {
   const out: Booking[] = [];
-  const seeds = [
-    { id: 'bk-1', clientId: 'client-1', staffId: 'staff-1', serviceId: 'svc-1', date: '2026-03-10', time: '09:00', status: 'completed' as const },
-    { id: 'bk-2', clientId: 'client-2', staffId: 'staff-2', serviceId: 'svc-4', date: '2026-03-10', time: '10:00', status: 'completed' as const },
-    { id: 'bk-3', clientId: 'client-3', staffId: 'staff-3', serviceId: 'svc-6', date: '2026-03-11', time: '11:00', status: 'completed' as const },
-    { id: 'bk-4', clientId: 'client-4', staffId: 'staff-1', serviceId: 'svc-2', date: '2026-03-12', time: '13:00', status: 'completed' as const },
-    { id: 'bk-5', clientId: 'client-5', staffId: 'staff-2', serviceId: 'svc-5', date: '2026-03-13', time: '09:30', status: 'completed' as const },
-    { id: 'bk-6', clientId: 'client-6', staffId: 'staff-4', serviceId: 'svc-3', date: '2026-03-14', time: '14:00', status: 'cancelled' as const },
-    { id: 'bk-7', clientId: 'client-7', staffId: 'staff-3', serviceId: 'svc-7', date: '2026-03-15', time: '10:00', status: 'completed' as const },
-    { id: 'bk-8', clientId: 'client-8', staffId: 'staff-1', serviceId: 'svc-1', date: '2026-03-17', time: '11:00', status: 'completed' as const },
-    { id: 'bk-9', clientId: 'client-9', staffId: 'staff-2', serviceId: 'svc-8', date: '2026-03-18', time: '15:00', status: 'completed' as const },
-    { id: 'bk-10', clientId: 'client-10', staffId: 'staff-4', serviceId: 'svc-4', date: '2026-03-19', time: '09:00', status: 'completed' as const },
-    { id: 'bk-11', clientId: 'client-1', staffId: 'staff-1', serviceId: 'svc-2', date: '2026-03-20', time: '10:00', status: 'completed' as const },
-    { id: 'bk-12', clientId: 'client-3', staffId: 'staff-3', serviceId: 'svc-6', date: '2026-03-21', time: '13:00', status: 'cancelled' as const },
-    { id: 'bk-13', clientId: 'client-10', staffId: 'staff-1', serviceId: 'svc-1', date: '2026-03-24', time: '09:00', status: 'confirmed' as const },
-    { id: 'bk-14', clientId: 'client-2', staffId: 'staff-2', serviceId: 'svc-4', date: '2026-03-24', time: '10:00', status: 'confirmed' as const },
-    { id: 'bk-15', clientId: 'client-5', staffId: 'staff-3', serviceId: 'svc-7', date: '2026-03-24', time: '11:00', status: 'pending' as const },
-    { id: 'bk-16', clientId: 'client-4', staffId: 'staff-4', serviceId: 'svc-3', date: '2026-03-24', time: '14:00', status: 'confirmed' as const },
-    { id: 'bk-17', clientId: 'client-1', staffId: 'staff-1', serviceId: 'svc-2', date: '2026-03-25', time: '10:00', status: 'confirmed' as const },
-    { id: 'bk-18', clientId: 'client-7', staffId: 'staff-2', serviceId: 'svc-5', date: '2026-03-25', time: '13:00', status: 'pending' as const },
-    { id: 'bk-19', clientId: 'client-9', staffId: 'staff-3', serviceId: 'svc-6', date: '2026-03-26', time: '09:00', status: 'confirmed' as const },
-    { id: 'bk-20', clientId: 'client-6', staffId: 'staff-1', serviceId: 'svc-1', date: '2026-03-26', time: '15:00', status: 'confirmed' as const },
-    { id: 'bk-21', clientId: 'client-8', staffId: 'staff-4', serviceId: 'svc-4', date: '2026-03-27', time: '10:00', status: 'pending' as const },
-    { id: 'bk-22', clientId: 'client-3', staffId: 'staff-2', serviceId: 'svc-8', date: '2026-03-28', time: '11:00', status: 'confirmed' as const },
-    { id: 'bk-23', clientId: 'client-10', staffId: 'staff-1', serviceId: 'svc-3', date: '2026-03-29', time: '10:00', status: 'confirmed' as const },
-  ];
-  for (const b of seeds) {
-    const svc = serviceSeeds.find(s => s.id === b.serviceId)!;
-    const [h, m] = b.time.split(':').map(Number);
-    const endMinutes = h * 60 + m + svc.duration;
-    const endTime = `${String(Math.floor(endMinutes / 60)).padStart(2, '0')}:${String(endMinutes % 60).padStart(2, '0')}`;
-    out.push({ ...b, ...tagOrgLoc, endTime, notes: '', createdAt: '2026-03-01' });
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Stable pseudo-random for repeatable demo data (seed: day-of-year so it changes nightly).
+  const seed = today.getDate() + today.getMonth() * 31;
+  let _r = seed;
+  const rand = () => {
+    _r = (_r * 9301 + 49297) % 233280;
+    return _r / 233280;
+  };
+  const pick = <T>(arr: readonly T[]): T => arr[Math.floor(rand() * arr.length)];
+
+  const fmtDate = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
+  const addDays = (d: Date, n: number) => {
+    const out = new Date(d);
+    out.setDate(out.getDate() + n);
+    return out;
+  };
+  const addMin = (time: string, mins: number) => {
+    const [h, m] = time.split(':').map(Number);
+    const total = h * 60 + m + mins;
+    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+  };
+
+  // Slot starting times (15-min granularity, business hours 09:00 – 18:30).
+  const slotStarts: string[] = [];
+  for (let h = 9; h < 19; h++) for (let m = 0; m < 60; m += 30) slotStarts.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
+
+  const clientIds = ['client-1', 'client-2', 'client-3', 'client-4', 'client-5', 'client-6', 'client-7', 'client-8', 'client-9', 'client-10'] as const;
+  const serviceIds = serviceSeeds.map(s => s.id);
+  const staffIds = ['staff-1', 'staff-2', 'staff-3', 'staff-4'] as const;
+
+  // Per-day booking density (more on weekdays, fewer on Sunday).
+  const densityFor = (dayOffset: number): number => {
+    const d = addDays(today, dayOffset);
+    const dow = d.getDay(); // 0 = Sun
+    if (dow === 0) return 3;
+    if (dow === 6) return 6;
+    return 8;
+  };
+
+  let bookingNum = 1;
+  const tryAdd = (dayOffset: number, status: Booking['status']) => {
+    const date = addDays(today, dayOffset);
+    const time = pick(slotStarts);
+    const serviceId = pick(serviceIds);
+    const svc = serviceSeeds.find(s => s.id === serviceId)!;
+    // Pick a staff who can perform this service.
+    const eligible = staffIds.filter(sid => svc.assignableStaff.includes(sid));
+    if (eligible.length === 0) return;
+    const staffId = pick(eligible);
+    const endTime = addMin(time, svc.duration);
+    // Reject if conflict on same staff for that date.
+    const conflict = out.some(b =>
+      b.staffId === staffId && b.date === fmtDate(date) &&
+      time < b.endTime && endTime > b.time,
+    );
+    if (conflict) return;
+    out.push({
+      ...tagOrgLoc,
+      id: `bk-${bookingNum++}`,
+      clientId: pick(clientIds),
+      staffId,
+      serviceId,
+      date: fmtDate(date),
+      time,
+      endTime,
+      status,
+      notes: '',
+      createdAt: fmtDate(addDays(date, -1)),
+    });
+  };
+
+  // Last week: completed (with the occasional cancellation)
+  for (let off = -7; off < 0; off++) {
+    const n = densityFor(off);
+    for (let i = 0; i < n; i++) tryAdd(off, rand() < 0.1 ? 'cancelled' : 'completed');
   }
+
+  // Today: mix — mornings completed, midday confirmed, afternoon pending (gives visual variety)
+  const todayCount = densityFor(0);
+  for (let i = 0; i < todayCount; i++) {
+    const r = rand();
+    const status: Booking['status'] = r < 0.3 ? 'completed' : r < 0.7 ? 'confirmed' : 'pending';
+    tryAdd(0, status);
+  }
+
+  // Next 14 days: mostly confirmed, some pending, rare cancelled
+  for (let off = 1; off <= 14; off++) {
+    const n = densityFor(off);
+    for (let i = 0; i < n; i++) {
+      const r = rand();
+      const status: Booking['status'] = r < 0.65 ? 'confirmed' : r < 0.95 ? 'pending' : 'cancelled';
+      tryAdd(off, status);
+    }
+  }
+
   return out;
 }
 
