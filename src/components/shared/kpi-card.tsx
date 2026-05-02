@@ -14,7 +14,7 @@ interface KPICardProps {
 export function KPICard({ title, value, icon: Icon, description, trend, className }: KPICardProps) {
   return (
     <Card className={cn('hover:shadow-lg hover:shadow-primary/5 transition-all duration-300', className)}>
-      <CardContent className="p-5">
+      <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{title}</p>

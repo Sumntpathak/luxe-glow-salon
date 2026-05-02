@@ -326,8 +326,8 @@ export default function StaffCalendarPage() {
           if (!open) setSelectedBooking(null);
         }}
       >
-        <SheetContent side="right" className="overflow-y-auto">
-          <SheetHeader>
+        <SheetContent side="right" className="flex flex-col p-0 gap-0">
+          <SheetHeader className="px-6 py-4 border-b">
             <SheetTitle>Appointment Details</SheetTitle>
             <SheetDescription>
               Full details for the selected appointment
@@ -335,7 +335,7 @@ export default function StaffCalendarPage() {
           </SheetHeader>
 
           {selectedBooking && selectedClient && selectedService && (
-            <div className="space-y-6 p-4 pt-0">
+            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
               {/* Status */}
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Status:</span>
@@ -437,17 +437,17 @@ export default function StaffCalendarPage() {
               )}
 
               {/* Action Buttons */}
-              {selectedBooking.status !== 'completed' && (
-                <div className="pt-2">
-                  <Button
-                    className="w-full"
-                    onClick={() => handleMarkComplete(selectedBooking.id)}
-                  >
-                    <CheckCircle2 className="h-4 w-4 mr-2" />
-                    Mark Complete
-                  </Button>
-                </div>
-              )}
+            </div>
+          )}
+          {selectedBooking && selectedBooking.status !== 'completed' && (
+            <div className="px-6 py-4 border-t bg-background sticky bottom-0">
+              <Button
+                className="w-full"
+                onClick={() => handleMarkComplete(selectedBooking.id)}
+              >
+                <CheckCircle2 className="h-4 w-4 mr-2" />
+                Mark Complete
+              </Button>
             </div>
           )}
         </SheetContent>

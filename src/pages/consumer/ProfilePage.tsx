@@ -27,11 +27,7 @@ const profileSchema = z.object({
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
-const tierConfig: Record<string, { color: string; className: string }> = {
-  Bronze: { color: 'text-orange-700', className: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' },
-  Silver: { color: 'text-gray-500', className: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200' },
-  Gold: { color: 'text-yellow-600', className: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' },
-};
+import { TIER_BADGE_CLASS } from '@/lib/ui/palettes';
 
 export default function ProfilePage() {
   const { currentUser, updateClient } = useStore();
@@ -71,7 +67,7 @@ export default function ProfilePage() {
     return <p className="text-muted-foreground">Please log in to view your profile.</p>;
   }
 
-  const tier = tierConfig[client.loyaltyTier] || tierConfig.Bronze;
+  const tierClassName = TIER_BADGE_CLASS[client.loyaltyTier] ?? TIER_BADGE_CLASS.Bronze;
 
   return (
     <div className="space-y-6">
@@ -173,7 +169,7 @@ export default function ProfilePage() {
                   <Star className="h-10 w-10 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div className="mb-2">
-                  <Badge className={tier.className} variant="secondary">
+                  <Badge className={tierClassName} variant="secondary">
                     {client.loyaltyTier} Tier
                   </Badge>
                 </div>

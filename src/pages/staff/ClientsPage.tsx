@@ -30,11 +30,7 @@ import {
 import { format, parseISO } from 'date-fns';
 import { Client } from '@/types';
 
-const tierColors: Record<string, string> = {
-  Gold: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
-  Silver: 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
-  Bronze: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-};
+import { TIER_BADGE_CLASS as tierColors } from '@/lib/ui/palettes';
 
 function getInitials(name: string) {
   return name

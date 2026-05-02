@@ -60,7 +60,7 @@ export default function MyBookingsPage() {
             <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
               <Mail className="h-7 w-7 text-primary" />
             </div>
-            <h2 className="text-2xl font-bold">View Your Bookings</h2>
+            <h1 className="text-2xl font-bold">View Your Bookings</h1>
             <p className="text-muted-foreground mt-2 mb-8">
               Enter the email you used when booking to see your appointments.
             </p>
@@ -81,9 +81,9 @@ export default function MyBookingsPage() {
           <div className="section-fade">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold">
+                <h1 className="text-xl font-bold">
                   {client ? `Welcome back, ${client.name.split(' ')[0]}` : 'Your Bookings'}
-                </h2>
+                </h1>
                 <p className="text-sm text-muted-foreground">{searchEmail}</p>
               </div>
               <Button variant="outline" size="sm" className="rounded-full" onClick={() => { setSearchEmail(''); setEmail(''); }}>

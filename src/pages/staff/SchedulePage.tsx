@@ -118,7 +118,7 @@ export default function StaffSchedulePage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <PageHeader
         title="My Schedule"
         description="Manage your working hours, blocked dates, and view upcoming shifts"
