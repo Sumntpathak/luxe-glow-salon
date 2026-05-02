@@ -2,7 +2,7 @@ import { ComponentType, ReactNode, useEffect, useMemo, useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import {
   Ban, Calendar as CalendarIcon, ChevronDown, CreditCard, Edit2, FileText,
-  Image as ImageIcon, Lock, Mail, Phone, Plus,
+  Image as ImageIcon, Lock, Mail, Phone, Plus, MessageSquare,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Booking, BookingStatus } from '@/types';
@@ -23,6 +23,8 @@ import { STATUS_STYLES, addMinutesToTime } from '@/lib/calendar/utils';
 import { useStore } from '@/lib/store';
 import { useTenantBookings, useTenantClients, useTenantServices, useTenantStaff } from '@/lib/store/hooks';
 import { cn } from '@/lib/utils';
+import CheckoutSheet from '@/components/checkout/checkout-sheet';
+import { openComposer } from '@/components/messages/message-composer';
 
 interface AppointmentDetailSheetProps {
   booking: Booking | null;
@@ -294,6 +296,7 @@ export default function AppointmentDetailSheet({ booking, onClose }: Appointment
   const [staffNote, setStaffNote] = useState('');
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [addServiceOpen, setAddServiceOpen] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   useEffect(() => {
     if (booking) { setClientNote(booking.notes ?? ''); setStaffNote(booking.privateNotes ?? ''); }
@@ -353,6 +356,15 @@ export default function AppointmentDetailSheet({ booking, onClose }: Appointment
                 ) : null}
                 {client?.phone ? (
                   <a href={`tel:${client.phone}`} className={chipClass}><Phone className="size-3" /><span>{client.phone}</span></a>
+                ) : null}
+                {client ? (
+                  <button
+                    type="button"
+                    onClick={() => openComposer({ clientId: client.id, channel: 'sms' })}
+                    className={chipClass}
+                  >
+                    <MessageSquare className="size-3" /><span>Message</span>
+                  </button>
                 ) : null}
               </div>
             </div>
@@ -434,9 +446,9 @@ export default function AppointmentDetailSheet({ booking, onClose }: Appointment
             <EmptyTab Icon={ImageIcon} title="Photos coming soon" body="Upload before/after shots and reference images." />
           </TabsContent>
           <TabsContent value="payments" className="flex-1 overflow-y-auto px-6 py-4 mt-0">
-            <EmptyTab Icon={CreditCard} title="Payments come from Checkout"
-              body="Open the appointment in Checkout to take payment."
-              action={<Button variant="outline" className="mt-4" onClick={() => toast('Coming in Epic 6 — checkout / POS')}>Go to checkout</Button>} />
+            <EmptyTab Icon={CreditCard} title="Take payment for this visit"
+              body="Open Checkout to ring up services, add products, apply discounts, and collect payment."
+              action={<Button className="mt-4" onClick={() => setCheckoutOpen(true)}>Open Checkout</Button>} />
           </TabsContent>
         </Tabs>
 
@@ -450,6 +462,11 @@ export default function AppointmentDetailSheet({ booking, onClose }: Appointment
             <Button variant="outline" onClick={() => setRescheduleOpen(true)} className="flex-1 min-w-[140px]">
               <CalendarIcon className="mr-1.5 size-4" />Reschedule
             </Button>
+            {booking.status !== 'cancelled' && booking.status !== 'no_show' && (
+              <Button variant="outline" onClick={() => setCheckoutOpen(true)} className="flex-1 min-w-[140px]">
+                <CreditCard className="mr-1.5 size-4" />Checkout
+              </Button>
+            )}
             {!terminal ? (
               <Button variant="ghost" onClick={onCancel} className="text-destructive hover:bg-destructive/10 hover:text-destructive">
                 <Ban className="mr-1.5 size-4" />Cancel
@@ -464,6 +481,10 @@ export default function AppointmentDetailSheet({ booking, onClose }: Appointment
         <AddServiceDialog booking={booking} open={addServiceOpen}
           onOpenChange={setAddServiceOpen} />
       </SheetContent>
+      <CheckoutSheet
+        booking={checkoutOpen ? booking : null}
+        onClose={() => { setCheckoutOpen(false); onClose(); }}
+      />
     </Sheet>
   );
 }

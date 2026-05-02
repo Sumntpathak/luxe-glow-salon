@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useStore } from './index';
-import { Booking, Staff, Service, Product, Client, Campaign, Coupon, Earning, PointsHistory, Location, Reward, Organization } from '@/types';
+import { Booking, Staff, Service, Product, Client, Campaign, Coupon, Earning, PointsHistory, Location, Reward, Organization, Message } from '@/types';
 
 // ── Tenant-scoped selector hooks ────────────────────────────────────────────
 // IMPORTANT: each selector is split into stable primitive/array reads from the
@@ -103,6 +103,12 @@ export function useTenantPointsHistory(): PointsHistory[] {
   const pointsHistory = useStore(s => s.pointsHistory);
   const currentOrgId = useStore(s => s.currentOrgId);
   return useMemo(() => pointsHistory.filter(p => p.orgId === currentOrgId), [pointsHistory, currentOrgId]);
+}
+
+export function useTenantMessages(): Message[] {
+  const messages = useStore(s => s.messages);
+  const currentOrgId = useStore(s => s.currentOrgId);
+  return useMemo(() => messages.filter(m => m.orgId === currentOrgId), [messages, currentOrgId]);
 }
 
 export function useTenantRewards(): Reward[] {

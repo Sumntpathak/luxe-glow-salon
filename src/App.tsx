@@ -35,13 +35,20 @@ import InventoryPage from '@/pages/admin/InventoryPage';
 import AnalyticsPage from '@/pages/admin/AnalyticsPage';
 import MarketingPage from '@/pages/admin/MarketingPage';
 import SettingsPage from '@/pages/admin/SettingsPage';
+import SettingsHubPage from '@/pages/admin/SettingsHubPage';
 import BillingPage from '@/pages/admin/BillingPage';
 import LocationsPage from '@/pages/admin/LocationsPage';
 import CalendarPage from '@/pages/admin/CalendarPage';
+import ClientProfilePage from '@/pages/admin/ClientProfilePage';
+import InboxPage from '@/pages/admin/InboxPage';
+import FlowsPage from '@/pages/admin/FlowsPage';
+import FlowEditorPage from '@/pages/admin/FlowEditorPage';
 
 // Layouts
 import { PortalLayout } from '@/components/shared/portal-layout';
 import CommandPalette from '@/components/shared/command-palette';
+import QuickAddClient from '@/components/clients/quick-add-client';
+import MessageComposer from '@/components/messages/message-composer';
 import { useAutoProgression } from '@/lib/booking/use-auto-progression';
 
 function ProtectedRoute({ role, children, allowExpiredTrial = false }: {
@@ -67,11 +74,23 @@ function ProtectedRoute({ role, children, allowExpiredTrial = false }: {
 
 export default function App() {
   const { darkMode } = useStore();
+  const organizations = useStore((s) => s.organizations);
+  const currentOrgId = useStore((s) => s.currentOrgId);
   useAutoProgression(); // MGN-404: 60s tick auto-advances checked_in → in_service + late toasts
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
   }, [darkMode]);
+
+  // MGN-904: apply the current org's brand color as a CSS variable.
+  useEffect(() => {
+    const org = organizations.find((o) => o.id === currentOrgId);
+    if (org?.primaryColor) {
+      document.documentElement.style.setProperty('--brand-primary', org.primaryColor);
+    } else {
+      document.documentElement.style.removeProperty('--brand-primary');
+    }
+  }, [organizations, currentOrgId]);
 
   return (
     <>
@@ -87,6 +106,8 @@ export default function App() {
         }}
       />
       <CommandPalette />
+      <QuickAddClient />
+      <MessageComposer />
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
@@ -115,15 +136,20 @@ export default function App() {
         <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><DashboardPage /></ProtectedRoute>} />
         <Route path="/admin/bookings" element={<ProtectedRoute role="admin"><BookingsPage /></ProtectedRoute>} />
         <Route path="/admin/clients" element={<ProtectedRoute role="admin"><AdminClientsPage /></ProtectedRoute>} />
+        <Route path="/admin/clients/:clientId" element={<ProtectedRoute role="admin"><ClientProfilePage /></ProtectedRoute>} />
         <Route path="/admin/staff" element={<ProtectedRoute role="admin"><StaffPage /></ProtectedRoute>} />
         <Route path="/admin/services" element={<ProtectedRoute role="admin"><ServicesPage /></ProtectedRoute>} />
         <Route path="/admin/inventory" element={<ProtectedRoute role="admin"><InventoryPage /></ProtectedRoute>} />
         <Route path="/admin/analytics" element={<ProtectedRoute role="admin"><AnalyticsPage /></ProtectedRoute>} />
         <Route path="/admin/marketing" element={<ProtectedRoute role="admin"><MarketingPage /></ProtectedRoute>} />
-        <Route path="/admin/settings" element={<ProtectedRoute role="admin"><SettingsPage /></ProtectedRoute>} />
+        <Route path="/admin/settings" element={<ProtectedRoute role="admin"><SettingsHubPage /></ProtectedRoute>} />
+        <Route path="/admin/settings/legacy" element={<ProtectedRoute role="admin"><SettingsPage /></ProtectedRoute>} />
         <Route path="/admin/billing" element={<ProtectedRoute role="admin" allowExpiredTrial><BillingPage /></ProtectedRoute>} />
         <Route path="/admin/locations" element={<ProtectedRoute role="admin"><LocationsPage /></ProtectedRoute>} />
         <Route path="/admin/calendar" element={<ProtectedRoute role="admin"><CalendarPage /></ProtectedRoute>} />
+        <Route path="/admin/inbox" element={<ProtectedRoute role="admin"><InboxPage /></ProtectedRoute>} />
+        <Route path="/admin/marketing/flows" element={<ProtectedRoute role="admin"><FlowsPage /></ProtectedRoute>} />
+        <Route path="/admin/marketing/flows/:flowId" element={<ProtectedRoute role="admin"><FlowEditorPage /></ProtectedRoute>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

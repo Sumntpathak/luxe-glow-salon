@@ -4,11 +4,13 @@ import {
   Role, User, Staff, Client, Service, Booking, Product,
   Campaign, Coupon, SalonSettings, PointsHistory, Reward, Earning, BookingStatus,
   Organization, Location, Plan, Admin, WorkingHours, BookingRules,
+  Receipt, SavedCard, Message, MessageChannel, Flow,
+  Resource, PermissionMatrix,
 } from '@/types';
 import {
   adminUser, staffMembers, clients, services, bookings,
   products, campaigns, coupons, salonSettings, pointsHistory, rewards, earnings,
-  organizations, locations, DEFAULT_ORG_ID, DEFAULT_LOCATION_ID,
+  organizations, locations, messages, resources, DEFAULT_ORG_ID, DEFAULT_LOCATION_ID,
 } from '@/lib/mock-data';
 
 export interface SignupInput {
@@ -65,6 +67,9 @@ interface AppState {
 
   // Clients
   clients: Client[];
+  addClient: (c: Omit<Client, 'id' | 'orgId' | 'primaryLocationId' | 'role' | 'loyaltyPoints' | 'loyaltyTier' | 'referralCode' | 'createdAt' | 'avatar'> & {
+    avatar?: string;
+  }) => Client;
   updateClient: (id: string, data: Partial<Client>) => void;
 
   // Services
@@ -110,6 +115,38 @@ interface AppState {
   // Earnings
   earnings: Earning[];
   addEarning: (e: Omit<Earning, 'orgId' | 'locationId'>) => void;
+
+  // Receipts (Epic 6 — POS)
+  receipts: Receipt[];
+  addReceipt: (r: Omit<Receipt, 'id' | 'orgId' | 'locationId' | 'createdAt'>) => Receipt;
+  saveCardForClient: (clientId: string, card: Omit<SavedCard, 'id'>) => void;
+
+  // Resources (Epic 9 / MGN-902)
+  resources: Resource[];
+  addResource: (r: Omit<Resource, 'id' | 'orgId' | 'locationId' | 'createdAt'>) => Resource;
+  updateResource: (id: string, data: Partial<Resource>) => void;
+  deleteResource: (id: string) => void;
+
+  // Permissions (Epic 9 / MGN-903) — per-org override matrix
+  permissionMatrix: PermissionMatrix;
+  setPermission: (role: keyof PermissionMatrix, permission: string, enabled: boolean) => void;
+
+  // Marketing flows (Epic 8)
+  flows: Flow[];
+  addFlow: (f: Omit<Flow, 'orgId'>) => Flow;
+  updateFlow: (id: string, data: Partial<Flow>) => void;
+  deleteFlow: (id: string) => void;
+  toggleFlowActive: (id: string) => void;
+
+  // Messages (Epic 7 — Communications)
+  messages: Message[];
+  sendMessage: (input: {
+    clientId: string;
+    channel: MessageChannel;
+    body: string;
+    subject?: string;
+  }) => Message;
+  markThreadRead: (clientId: string, channel: MessageChannel) => void;
 
   // Dark mode
   darkMode: boolean;
@@ -222,6 +259,27 @@ export const useStore = create<AppState>()(
 
       // Clients
       clients: clients,
+      addClient: (c) => {
+        const id = `client-${Date.now()}`;
+        const referralCode = `${c.name.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8) || 'NEW'}${Math.floor(Math.random() * 1000)}`;
+        let created!: Client;
+        set((state) => {
+          created = {
+            ...c,
+            id,
+            orgId: state.currentOrgId,
+            primaryLocationId: state.currentLocationId,
+            role: 'consumer',
+            loyaltyPoints: 0,
+            loyaltyTier: 'Bronze',
+            referralCode,
+            createdAt: new Date().toISOString(),
+            avatar: c.avatar ?? `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(c.name)}`,
+          };
+          return { clients: [...state.clients, created] };
+        });
+        return created;
+      },
       updateClient: (id, data) => set((state) => ({
         clients: state.clients.map(c => c.id === id ? { ...c, ...data } : c),
       })),
@@ -315,6 +373,121 @@ export const useStore = create<AppState>()(
         earnings: [...state.earnings, { ...e, orgId: state.currentOrgId, locationId: state.currentLocationId }],
       })),
 
+      // Resources (Epic 9 / MGN-902)
+      resources,
+      addResource: (r) => {
+        let created!: Resource;
+        set((state) => {
+          created = {
+            ...r,
+            id: `res-${Date.now()}`,
+            orgId: state.currentOrgId,
+            locationId: state.currentLocationId,
+            createdAt: new Date().toISOString(),
+          };
+          return { resources: [...state.resources, created] };
+        });
+        return created;
+      },
+      updateResource: (id, data) => set((state) => ({
+        resources: state.resources.map((r) => r.id === id ? { ...r, ...data } : r),
+      })),
+      deleteResource: (id) => set((state) => ({
+        resources: state.resources.filter((r) => r.id !== id),
+      })),
+
+      // Permissions (Epic 9 / MGN-903)
+      permissionMatrix: {} as PermissionMatrix,
+      setPermission: (role, permission, enabled) => set((state) => {
+        const r = state.permissionMatrix[role] ?? {};
+        return {
+          permissionMatrix: {
+            ...state.permissionMatrix,
+            [role]: { ...r, [permission]: enabled },
+          },
+        };
+      }),
+
+      // Marketing flows (Epic 8)
+      flows: [],
+      addFlow: (f) => {
+        let created!: Flow;
+        set((state) => {
+          created = { ...f, orgId: state.currentOrgId };
+          return { flows: [...state.flows, created] };
+        });
+        return created;
+      },
+      updateFlow: (id, data) => set((state) => ({
+        flows: state.flows.map((f) => f.id === id ? { ...f, ...data, updatedAt: new Date().toISOString() } : f),
+      })),
+      deleteFlow: (id) => set((state) => ({
+        flows: state.flows.filter((f) => f.id !== id),
+      })),
+      toggleFlowActive: (id) => set((state) => ({
+        flows: state.flows.map((f) => f.id === id ? { ...f, active: !f.active, updatedAt: new Date().toISOString() } : f),
+      })),
+
+      // Messages (Epic 7)
+      messages,
+      sendMessage: (input) => {
+        const id = `msg-${Date.now()}`;
+        let created!: Message;
+        set((state) => {
+          created = {
+            id,
+            orgId: state.currentOrgId,
+            locationId: state.currentLocationId,
+            clientId: input.clientId,
+            channel: input.channel,
+            direction: 'outbound',
+            subject: input.subject,
+            body: input.body,
+            sentAt: new Date().toISOString(),
+            read: true,
+            status: 'sent',
+          };
+          return { messages: [...state.messages, created] };
+        });
+        // Mock delivery transition (production = Twilio webhook).
+        setTimeout(() => {
+          useStore.setState((s) => ({
+            messages: s.messages.map((m) => m.id === id ? { ...m, status: 'delivered' } : m),
+          }));
+        }, 1200);
+        return created;
+      },
+      markThreadRead: (clientId, channel) => set((state) => ({
+        messages: state.messages.map((m) =>
+          m.clientId === clientId && m.channel === channel && !m.read ? { ...m, read: true } : m,
+        ),
+      })),
+
+      // Receipts (Epic 6)
+      receipts: [],
+      addReceipt: (r) => {
+        const id = `rcp-${Date.now()}`;
+        let created!: Receipt;
+        set((state) => {
+          created = {
+            ...r,
+            id,
+            orgId: state.currentOrgId,
+            locationId: state.currentLocationId,
+            createdAt: new Date().toISOString(),
+          };
+          return { receipts: [...state.receipts, created] };
+        });
+        return created;
+      },
+      saveCardForClient: (clientId, card) => set((state) => ({
+        clients: state.clients.map((c) => {
+          if (c.id !== clientId) return c;
+          const newCard: SavedCard = { id: `card-${Date.now()}`, ...card };
+          return { ...c, savedCards: [...(c.savedCards ?? []), newCard] };
+        }),
+      })),
+
       // Dark mode
       darkMode: false,
       toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
@@ -344,6 +517,11 @@ export const useStore = create<AppState>()(
         salonSettings: state.salonSettings,
         pointsHistory: state.pointsHistory,
         earnings: state.earnings,
+        receipts: state.receipts,
+        messages: state.messages,
+        flows: state.flows,
+        resources: state.resources,
+        permissionMatrix: state.permissionMatrix,
         darkMode: state.darkMode,
         recentNavIds: state.recentNavIds,
       }),

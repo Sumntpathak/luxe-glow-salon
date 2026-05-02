@@ -114,6 +114,7 @@ export default function AdminAnalyticsPage() {
   const retentionData = useMemo(() => {
     const weeks: Record<string, { newClients: number; returning: number }> = {};
 
+    
     // Determine each client's first booking date (across all bookings, not just filtered)
     const clientFirstBooking: Record<string, string> = {};
     bookings

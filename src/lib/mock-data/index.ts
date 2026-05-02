@@ -1,7 +1,7 @@
 import {
   Staff, Client, Admin, Service, Booking, Product,
   Campaign, Coupon, SalonSettings, PointsHistory, Reward, Earning,
-  WorkingHours, Organization, Location,
+  WorkingHours, Organization, Location, Message, Resource,
 } from '@/types';
 
 const defaultWorkingHours: WorkingHours = {
@@ -121,7 +121,28 @@ const clientSeeds: ClientSeed[] = [
   { id: 'client-9', name: 'Iris Patel', email: 'iris@email.com', phone: '+1-555-0309', role: 'consumer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Iris', preferences: 'Prefers Mia for nails', allergies: 'Acetone sensitivity', loyaltyPoints: 1100, loyaltyTier: 'Gold', referralCode: 'IRIS2024', createdAt: '2024-05-10' },
   { id: 'client-10', name: 'Jack Robinson', email: 'consumer@salon.com', phone: '+1-555-0310', role: 'consumer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jack', preferences: 'Weekend slots only', allergies: '', loyaltyPoints: 600, loyaltyTier: 'Silver', referralCode: 'JACK2024', createdAt: '2024-05-20' },
 ];
-export const clients: Client[] = clientSeeds.map(c => ({ ...c, orgId: DEFAULT_ORG_ID, primaryLocationId: DEFAULT_LOCATION_ID }));
+// Sprinkle some tags + admin notes onto seeded clients so the demo profile is rich.
+const CLIENT_TAGS_BY_ID: Record<string, string[]> = {
+  'client-1': ['VIP', 'Color'],
+  'client-3': ['Color', 'Sensitive skin'],
+  'client-5': ['VIP', 'Organic only'],
+  'client-7': ['Evenings'],
+  'client-8': ['Beard care'],
+  'client-9': ['VIP'],
+  'client-10': ['Weekends'],
+};
+const CLIENT_ADMIN_NOTES_BY_ID: Record<string, string> = {
+  'client-1': 'Always books 6-week color refresh. Prefers Emma. Zero tolerance for cool tones.',
+  'client-5': 'Early adopter — referred 4 friends. Birthday in March; send a card.',
+  'client-9': 'Recovering from a bad nail experience elsewhere. Be extra gentle on cuticles.',
+};
+export const clients: Client[] = clientSeeds.map((c) => ({
+  ...c,
+  orgId: DEFAULT_ORG_ID,
+  primaryLocationId: DEFAULT_LOCATION_ID,
+  tags: CLIENT_TAGS_BY_ID[c.id],
+  adminNotes: CLIENT_ADMIN_NOTES_BY_ID[c.id],
+}));
 
 type ServiceSeed = Omit<Service, 'orgId' | 'locationIds'>;
 const serviceSeeds: ServiceSeed[] = [
@@ -340,3 +361,43 @@ const earningSeeds: EarningSeed[] = [
   { id: 'earn-10', staffId: 'staff-1', bookingId: 'bk-11', serviceAmount: 150, commissionAmount: 60, tips: 25, date: '2026-03-20' },
 ];
 export const earnings: Earning[] = earningSeeds.map(e => ({ ...e, ...tagOrgLoc }));
+
+// ── Messages (Epic 7 inbox seed) ───────────────────────────────────────────
+function generateMessages(): Message[] {
+  const now = Date.now();
+  const ago = (mins: number) => new Date(now - mins * 60_000).toISOString();
+  const seeds: Array<Omit<Message, 'orgId' | 'locationId'>> = [
+    // Most recent thread — unread inbound, then a reply
+    { id: 'msg-1', clientId: 'client-1', channel: 'sms',  direction: 'inbound',  body: 'Hi! Is it possible to push my Tuesday color back to 4pm?', sentAt: ago(8),  read: false, status: 'received' },
+    { id: 'msg-2', clientId: 'client-1', channel: 'sms',  direction: 'outbound', body: 'Hi Alice! Yes, 4pm Tuesday is open with Emma — should I move you?', sentAt: ago(5),  read: true,  status: 'delivered' },
+    { id: 'msg-3', clientId: 'client-1', channel: 'sms',  direction: 'inbound',  body: 'Yes please! Thank you 🙏', sentAt: ago(3),  read: false, status: 'received' },
+
+    { id: 'msg-4', clientId: 'client-5', channel: 'email', direction: 'outbound', subject: 'Your appointment confirmation', body: 'Hi Eva — your Spa Pedicure with Mia is confirmed for Friday at 1:30pm. Reply STOP to opt out.', sentAt: ago(60),  read: true,  status: 'delivered' },
+    { id: 'msg-5', clientId: 'client-5', channel: 'email', direction: 'inbound',  subject: 'Re: Your appointment confirmation', body: 'Got it, thanks! See you then.', sentAt: ago(45),  read: false, status: 'received' },
+
+    { id: 'msg-6', clientId: 'client-9', channel: 'sms',  direction: 'outbound', body: 'Reminder: nail art appointment tomorrow at 3pm with Mia. Reply C to confirm.', sentAt: ago(180), read: true,  status: 'delivered' },
+    { id: 'msg-7', clientId: 'client-9', channel: 'sms',  direction: 'inbound',  body: 'C', sentAt: ago(170), read: true,  status: 'received' },
+
+    { id: 'msg-8', clientId: 'client-3', channel: 'sms',  direction: 'inbound',  body: 'My skin reacted to the last peel — should I come in earlier or wait?', sentAt: ago(240), read: false, status: 'received' },
+
+    { id: 'msg-9',  clientId: 'client-7', channel: 'email', direction: 'outbound', subject: 'We miss you, Grace!', body: 'It has been a while since your last visit. Book any service this month and get 15% off.', sentAt: ago(2880), read: true,  status: 'delivered' },
+    { id: 'msg-10', clientId: 'client-2', channel: 'sms',   direction: 'outbound', body: 'Hi Bob — your gel manicure is confirmed for next Wednesday at 10am.', sentAt: ago(1440), read: true, status: 'delivered' },
+    { id: 'msg-11', clientId: 'client-2', channel: 'sms',   direction: 'inbound',  body: 'Thanks! Could I add a pedicure?', sentAt: ago(1380), read: true, status: 'received' },
+    { id: 'msg-12', clientId: 'client-2', channel: 'sms',   direction: 'outbound', body: 'Absolutely — added a Spa Pedicure right after. New total visit: $105.', sentAt: ago(1370), read: true, status: 'delivered' },
+
+    { id: 'msg-13', clientId: 'client-10', channel: 'sms', direction: 'outbound', body: 'Welcome to Luxe Glow, Jack! Use code WELCOME10 for 10% off your first visit.', sentAt: ago(4320), read: true, status: 'delivered' },
+  ];
+  return seeds.map((m) => ({ ...m, orgId: DEFAULT_ORG_ID, locationId: DEFAULT_LOCATION_ID }));
+}
+
+export const messages: Message[] = generateMessages();
+
+// ── Resources (Epic 9 / MGN-902 seed) ──────────────────────────────────────
+export const resources: Resource[] = [
+  { id: 'res-1', orgId: DEFAULT_ORG_ID, locationId: DEFAULT_LOCATION_ID, name: 'Color station 1',  kind: 'chair',     isActive: true, createdAt: '2024-01-01' },
+  { id: 'res-2', orgId: DEFAULT_ORG_ID, locationId: DEFAULT_LOCATION_ID, name: 'Color station 2',  kind: 'chair',     isActive: true, createdAt: '2024-01-01' },
+  { id: 'res-3', orgId: DEFAULT_ORG_ID, locationId: DEFAULT_LOCATION_ID, name: 'Mani-pedi station',kind: 'chair',     isActive: true, createdAt: '2024-01-01' },
+  { id: 'res-4', orgId: DEFAULT_ORG_ID, locationId: DEFAULT_LOCATION_ID, name: 'Treatment room A', kind: 'room',      isActive: true, createdAt: '2024-01-01' },
+  { id: 'res-5', orgId: DEFAULT_ORG_ID, locationId: DEFAULT_LOCATION_ID, name: 'Treatment room B', kind: 'room',      isActive: true, createdAt: '2024-01-01' },
+  { id: 'res-6', orgId: DEFAULT_ORG_ID, locationId: DEFAULT_LOCATION_ID, name: 'Steamer',          kind: 'equipment', isActive: true, createdAt: '2024-01-01' },
+];

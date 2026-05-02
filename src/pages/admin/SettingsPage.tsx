@@ -11,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { Save, Building, Clock, BookOpen, Bell } from 'lucide-react';
+import { Save, Building, Clock, BookOpen, Bell, MessageSquare, Mail, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { WorkingHours } from '@/types';
 
@@ -311,7 +311,9 @@ export default function AdminSettingsPage() {
         </TabsContent>
 
         {/* Notification Templates Tab */}
-        <TabsContent value="notifications">
+        <TabsContent value="notifications" className="space-y-6">
+          <ReminderCadenceCard />
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -372,5 +374,123 @@ export default function AdminSettingsPage() {
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+// ── MGN-703: Reminder cadence card ─────────────────────────────────────────
+function ReminderCadenceCard() {
+  const salonSettings = useStore((s) => s.salonSettings);
+  const updateSalonSettings = useStore((s) => s.updateSalonSettings);
+
+  const reminders = salonSettings.reminderSettings ?? {
+    smsEnabled: true,
+    emailEnabled: true,
+    beforeHours: [24, 2],
+  };
+  const [hoursDraft, setHoursDraft] = useState('');
+
+  const setReminders = (patch: Partial<typeof reminders>) => {
+    updateSalonSettings({
+      reminderSettings: { ...reminders, ...patch },
+    });
+  };
+
+  const addHours = () => {
+    const v = Number(hoursDraft);
+    if (!Number.isFinite(v) || v <= 0) {
+      toast.error('Enter a number of hours greater than 0');
+      return;
+    }
+    if (reminders.beforeHours.includes(v)) {
+      toast.error('That cadence is already configured');
+      return;
+    }
+    const next = [...reminders.beforeHours, v].sort((a, b) => b - a);
+    setReminders({ beforeHours: next });
+    setHoursDraft('');
+  };
+
+  const removeHours = (h: number) => {
+    setReminders({ beforeHours: reminders.beforeHours.filter((x) => x !== h) });
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Clock className="h-5 w-5" />
+          Reminder cadence
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <p className="text-sm text-muted-foreground">
+          Choose when to send appointment reminders and which channels to use.
+          Demo mode — production uses Twilio (SMS) + SendGrid (Email).
+        </p>
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="flex items-center justify-between p-3 rounded-lg border border-border/60">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4 text-primary" />
+              <div>
+                <Label className="text-sm">SMS reminders</Label>
+                <p className="text-xs text-muted-foreground">Texted to client phone</p>
+              </div>
+            </div>
+            <Switch
+              checked={reminders.smsEnabled}
+              onCheckedChange={(v) => setReminders({ smsEnabled: v })}
+            />
+          </div>
+          <div className="flex items-center justify-between p-3 rounded-lg border border-border/60">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4 text-primary" />
+              <div>
+                <Label className="text-sm">Email reminders</Label>
+                <p className="text-xs text-muted-foreground">Sent to client email</p>
+              </div>
+            </div>
+            <Switch
+              checked={reminders.emailEnabled}
+              onCheckedChange={(v) => setReminders({ emailEnabled: v })}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Send reminders this many hours before each appointment</Label>
+          <div className="flex flex-wrap gap-1.5">
+            {reminders.beforeHours.length === 0 ? (
+              <p className="text-xs text-muted-foreground">No reminders configured.</p>
+            ) : (
+              reminders.beforeHours.map((h) => (
+                <button
+                  key={h}
+                  type="button"
+                  onClick={() => removeHours(h)}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/30 text-xs hover:bg-primary/20 transition"
+                >
+                  {h >= 24 ? `${Math.round(h / 24)}d` : `${h}hr`} before
+                  <X className="h-3 w-3 opacity-60" />
+                </button>
+              ))
+            )}
+          </div>
+          <div className="flex items-center gap-2 mt-2">
+            <Input
+              type="number"
+              min={1}
+              placeholder="e.g. 48"
+              className="max-w-[120px]"
+              value={hoursDraft}
+              onChange={(e) => setHoursDraft(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addHours(); } }}
+            />
+            <Button size="sm" variant="outline" onClick={addHours}>Add cadence</Button>
+            <span className="text-xs text-muted-foreground">hours before appointment</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

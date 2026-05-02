@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clock, Moon, LogOut } from 'lucide-react';
+import { Clock, Moon, LogOut, UserPlus } from 'lucide-react';
 import {
   CommandDialog,
   CommandInput,
@@ -136,6 +136,20 @@ export default function CommandPalette() {
           <>
             <CommandSeparator />
             <CommandGroup heading="Quick actions">
+              {currentUser.role === 'admin' && (
+                <CommandItem
+                  value="New client add create"
+                  onSelect={() => {
+                    setOpen(false);
+                    if (typeof window !== 'undefined') {
+                      window.dispatchEvent(new CustomEvent('luxe:open-quick-add-client'));
+                    }
+                  }}
+                >
+                  <UserPlus />
+                  <span className="flex-1">New client</span>
+                </CommandItem>
+              )}
               <CommandItem
                 value="Toggle dark mode theme appearance"
                 onSelect={handleToggleDarkMode}

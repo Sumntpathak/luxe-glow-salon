@@ -38,6 +38,8 @@ import {
 import toast from 'react-hot-toast';
 import { format, parseISO } from 'date-fns';
 import { FeatureGate } from '@/components/shared/feature-gate';
+import { Link } from 'react-router-dom';
+import { Sparkles, ArrowRight } from 'lucide-react';
 
 export default function AdminMarketingPageWrapper() {
   return (
@@ -162,6 +164,28 @@ function AdminMarketingPage() {
         title="Marketing"
         description="Manage campaigns, loyalty program, and coupons"
       />
+
+      {/* Epic 8: prominent Flows entry point */}
+      <Link
+        to="/admin/marketing/flows"
+        className="block rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/5 to-accent/5 p-4 hover:border-primary/50 transition group"
+      >
+        <div className="flex items-center gap-4">
+          <div className="size-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+            <Sparkles className="size-5 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold flex items-center gap-2">
+              Automated Flows
+              <span className="text-[10px] uppercase tracking-wide bg-primary text-primary-foreground px-1.5 py-0.5 rounded">New</span>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Trigger sequences for new clients, lapsed clients, post-service follow-ups, and more.
+            </div>
+          </div>
+          <ArrowRight className="size-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition" />
+        </div>
+      </Link>
 
       <Tabs defaultValue="campaigns">
         <TabsList className="w-full sm:w-auto">
