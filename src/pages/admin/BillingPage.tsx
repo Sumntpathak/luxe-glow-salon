@@ -1,6 +1,7 @@
 import { useStore } from '@/lib/store';
 import { Plan } from '@/types';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { PageHeader } from '@/components/shared/page-header';
 import { Check, Sparkles, AlertTriangle } from 'lucide-react';
@@ -93,38 +94,38 @@ export default function BillingPage() {
           {PLANS.map(p => {
             const isCurrent = org.plan === p.id && isActive;
             return (
-              <div
+              <Card
                 key={p.id}
-                className={`p-6 rounded-2xl border bg-card flex flex-col ${
-                  isCurrent ? 'border-primary shadow-md' : 'border-border/60'
-                }`}
+                className={isCurrent ? 'border-primary shadow-md' : 'border-border/60'}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <h4 className="text-lg font-bold">{p.name}</h4>
-                  {isCurrent && <Badge>Current</Badge>}
-                </div>
-                <p className="text-xs text-muted-foreground">{p.locations}</p>
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-3xl font-bold">${p.price}</span>
-                  <span className="text-muted-foreground text-sm">/mo</span>
-                </div>
-                <ul className="mt-4 space-y-2 flex-1">
-                  {p.features.map(f => (
-                    <li key={f} className="flex items-start gap-2 text-sm">
-                      <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  className="mt-6 w-full"
-                  variant={isCurrent ? 'outline' : 'default'}
-                  disabled={isCurrent}
-                  onClick={() => handleSubscribe(p.id)}
-                >
-                  {isCurrent ? 'Current plan' : isTrialing ? 'Start subscription' : 'Switch to ' + p.name}
-                </Button>
-              </div>
+                <CardContent className="p-6 flex flex-col h-full">
+                  <div className="flex items-center justify-between mb-1">
+                    <h4 className="text-lg font-bold">{p.name}</h4>
+                    {isCurrent && <Badge>Current</Badge>}
+                  </div>
+                  <p className="text-xs text-muted-foreground">{p.locations}</p>
+                  <div className="mt-4 flex items-baseline gap-1">
+                    <span className="text-3xl font-bold">${p.price}</span>
+                    <span className="text-muted-foreground text-sm">/mo</span>
+                  </div>
+                  <ul className="mt-4 space-y-2 flex-1">
+                    {p.features.map(f => (
+                      <li key={f} className="flex items-start gap-2 text-sm">
+                        <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    className="mt-6 w-full"
+                    variant={isCurrent ? 'outline' : 'default'}
+                    disabled={isCurrent}
+                    onClick={() => handleSubscribe(p.id)}
+                  >
+                    {isCurrent ? 'Current plan' : isTrialing ? 'Start subscription' : 'Switch to ' + p.name}
+                  </Button>
+                </CardContent>
+              </Card>
             );
           })}
         </div>

@@ -24,9 +24,12 @@ const staffLinks = [
   { href: '/staff/schedule', label: 'Schedule', icon: Clock },
 ];
 
+// NOTE: admin role uses TopBar (Epic 1), so adminLinks is only kept here as a
+// reference / fallback. If a future surface re-enables admin sidebar mode,
+// add new entries here. Legacy `/admin/bookings` is intentionally omitted —
+// the calendar replaces it (route still works for back-compat).
 const adminLinks = [
-  { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/bookings', label: 'Bookings', icon: Calendar },
+  { href: '/admin/calendar', label: 'Calendar', icon: Calendar },
   { href: '/admin/clients', label: 'Clients', icon: Users },
   { href: '/admin/staff', label: 'Staff', icon: Scissors },
   { href: '/admin/services', label: 'Services', icon: Star },

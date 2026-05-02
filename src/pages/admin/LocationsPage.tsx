@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useStore } from '@/lib/store';
 import { Location, BookingRules, WorkingHours } from '@/types';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -135,44 +136,46 @@ export default function LocationsPage() {
         {orgLocations.map(loc => {
           const isCurrent = loc.id === currentLocationId;
           return (
-            <div
+            <Card
               key={loc.id}
-              className={`p-5 rounded-2xl border bg-card transition ${
+              className={`transition ${
                 isCurrent ? 'border-primary shadow-md shadow-primary/5' : 'border-border/60'
               } ${!loc.isActive ? 'opacity-50' : ''}`}
             >
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <MapPin className="h-4 w-4 text-primary" />
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <MapPin className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-semibold truncate">{loc.name}</h3>
+                      <p className="text-xs text-muted-foreground truncate">/{loc.slug}</p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <h3 className="font-semibold truncate">{loc.name}</h3>
-                    <p className="text-xs text-muted-foreground truncate">/{loc.slug}</p>
-                  </div>
+                  {isCurrent && <Badge variant="outline" className="shrink-0"><CheckCircle2 className="h-3 w-3 mr-1" />Active</Badge>}
                 </div>
-                {isCurrent && <Badge variant="outline" className="shrink-0"><CheckCircle2 className="h-3 w-3 mr-1" />Active</Badge>}
-              </div>
 
-              <p className="text-sm text-muted-foreground mb-1.5 line-clamp-2">{loc.address}</p>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Phone className="h-3 w-3" /> {loc.phone || '—'}
-              </p>
+                <p className="text-sm text-muted-foreground mb-1.5 line-clamp-2">{loc.address}</p>
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Phone className="h-3 w-3" /> {loc.phone || '—'}
+                </p>
 
-              <div className="flex items-center gap-2 mt-4 pt-4 border-t border-border/50">
-                {!isCurrent && loc.isActive && (
-                  <Button size="sm" variant="ghost" onClick={() => setCurrentLocation(loc.id)}>
-                    Switch to
+                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-border/50">
+                  {!isCurrent && loc.isActive && (
+                    <Button size="sm" variant="ghost" onClick={() => setCurrentLocation(loc.id)}>
+                      Switch to
+                    </Button>
+                  )}
+                  <Button size="sm" variant="ghost" onClick={() => openEdit(loc)}>
+                    <Edit2 className="h-3.5 w-3.5 mr-1" /> Edit
                   </Button>
-                )}
-                <Button size="sm" variant="ghost" onClick={() => openEdit(loc)}>
-                  <Edit2 className="h-3.5 w-3.5 mr-1" /> Edit
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => toggleActive(loc)} className="ml-auto">
-                  <Power className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            </div>
+                  <Button size="sm" variant="ghost" onClick={() => toggleActive(loc)} className="ml-auto" aria-label={loc.isActive ? 'Deactivate location' : 'Reactivate location'}>
+                    <Power className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           );
         })}
 

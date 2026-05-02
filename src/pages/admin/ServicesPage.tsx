@@ -217,7 +217,7 @@ export default function AdminServicesPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-1">
-                    <CardTitle className="text-lg">{svc.name}</CardTitle>
+                    <CardTitle>{svc.name}</CardTitle>
                     <div className="flex items-center gap-2">
                       <Badge
                         variant="secondary"
@@ -241,9 +241,11 @@ export default function AdminServicesPage() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
                       onClick={() => handleDelete(svc.id, svc.name)}
+                      aria-label={`Delete ${svc.name}`}
                     >
-                      <Trash2 className="h-4 w-4 text-destructive" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
